@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('location_map')->nullable();
             $table->text('terms_and_conditions')->nullable();
             $table->enum('status', ['draft', 'active', 'completed'])->default('draft');
+            $table->integer('best_of')->default(1); // 1 = Single Match, 3 = BO3, etc.
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // Creator
             $table->timestamps();
         });

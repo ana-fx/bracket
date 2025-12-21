@@ -42,6 +42,7 @@ class TournamentController extends Controller
             'location' => 'nullable|string',
             'location_map' => 'nullable|string',
             'terms_and_conditions' => 'nullable|string',
+            'best_of' => 'nullable|integer|in:1,3,5,7',
         ]);
 
         $coverPath = null;
@@ -60,6 +61,7 @@ class TournamentController extends Controller
             'terms_and_conditions' => $request->terms_and_conditions,
             'user_id' => Auth::id() ?? 1,
             'status' => 'draft',
+            'best_of' => $request->best_of ?? 1,
         ]);
 
 
@@ -90,6 +92,7 @@ class TournamentController extends Controller
             'location' => 'nullable|string',
             'location_map' => 'nullable|string',
             'terms_and_conditions' => 'nullable|string',
+            'best_of' => 'nullable|integer|in:1,3,5,7',
         ]);
 
         if ($request->hasFile('cover_image')) {
@@ -106,6 +109,7 @@ class TournamentController extends Controller
         $tournament->location = $request->location;
         $tournament->location_map = $request->location_map;
         $tournament->terms_and_conditions = $request->terms_and_conditions;
+        $tournament->best_of = $request->best_of ?? 1;
         $tournament->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Tournament updated successfully.');
@@ -164,7 +168,7 @@ class TournamentController extends Controller
         }
 
         // Regenerate the bracket to reflect new seeds
-        $bracketService->generate($tournament);
+        $bracketService->generateBracket($tournament);
 
         return response()->json(['success' => true, 'message' => 'Randomized!']);
     }
@@ -176,11 +180,11 @@ class TournamentController extends Controller
             return back()->withErrors(['error' => 'Not enough participants.']);
         }
 
-        $bracketService->generate($tournament);
+        $bracketService->generateBracket($tournament);
 
         $tournament->update(['status' => 'active']);
 
-        return redirect()->route('tournaments.show', $tournament);
+        return redirect()->route('admin.tournaments.show', $tournament);
     }
 
 
@@ -204,5 +208,64 @@ class TournamentController extends Controller
         $matchesByRound = $tournament->matches->groupBy('round');
 
         return view('tournaments.show', compact('tournament', 'matchesByRound'));
+    }
+
+    public function updateMatch(Request $request, \App\Models\TournamentMatch $match)
+    {
+        $match->load('tournament');
+
+        if ($match->tournament->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'participant_1_score' => 'required|integer|min:0',
+            'participant_2_score' => 'required|integer|min:0',
+        ]);
+
+        $match->update([
+            'participant_1_score' => $request->participant_1_score,
+            'participant_2_score' => $request->participant_2_score,
+        ]);
+
+        // Auto-Detect Winner Logic based on Best Of
+        $bestOf = $match->tournament->best_of;
+        $winsNeeded = ceil($bestOf / 2);
+
+        $winnerId = null;
+
+        if ($match->participant_1_score >= $winsNeeded) {
+            $winnerId = $match->participant_1_id;
+        } elseif ($match->participant_2_score >= $winsNeeded) {
+            $winnerId = $match->participant_2_id;
+        }
+
+        if ($winnerId && $winnerId !== $match->winner_id) {
+            $match->update(['winner_id' => $winnerId]);
+
+            // Advance Winner to Next Match if exists
+            if ($match->next_match_id) {
+                $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
+                if ($nextMatch) {
+                    $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
+                    $nextMatch->update([$slot => $winnerId]);
+                }
+            }
+        } elseif (!$winnerId && $match->winner_id) {
+             // Score changed back to non-winning? Revoke winner.
+             $lastWinnerId = $match->winner_id;
+             $match->update(['winner_id' => null]);
+
+             if ($match->next_match_id) {
+                 $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
+                 $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
+                 // Only clear if it held the old winner
+                 if ($nextMatch && $nextMatch->$slot == $lastWinnerId) {
+                     $nextMatch->update([$slot => null]);
+                 }
+             }
+        }
+
+        return back()->with('success', 'Match updated.');
     }
 }

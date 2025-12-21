@@ -17,7 +17,7 @@
             @foreach($matchesByRound as $round => $matches)
                 <div class="flex flex-col justify-around relative space-y-8 min-w-[260px]">
 
-                    {{-- Round Title --}}
+                    {{-- Round Title: Improved Logic --}}
                     <div class="absolute -top-10 left-0 w-full text-center">
                         <span class="text-xs font-bold tracking-[0.2em] text-gray-400 uppercase">
                             @if($loop->last)
@@ -25,12 +25,12 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                         <path fill-rule="evenodd" d="M5.166 2.621v.858c-1.035.148-2.059.33-3.071.543a.75.75 0 00-.584.859 6.753 6.753 0 006.138 5.6 6.73 6.73 0 002.743 1.346A6.707 6.707 0 019.279 15H8.54c-1.036 0-1.875.84-1.875 1.875V19.5h-.75a2.25 2.25 0 00-2.25 2.25c0 .414.336.75.75.75h15a.75.75 0 00.75-.75 2.25 2.25 0 00-2.25-2.25h-.75v-2.625c0-1.036-.84-1.875-1.875-1.875h-.739a6.706 6.706 0 01-1.112-3.173 6.73 6.73 0 002.743-1.347 6.753 6.753 0 006.139-5.6.75.75 0 00-.585-.858 47.077 47.077 0 00-3.07-.543V2.62a.75.75 0 00-.658-.744 49.22 49.22 0 00-6.093-.377c-2.063 0-4.096.128-6.093.377a.75.75 0 00-.657.744zm0 2.629c0 1.196.312 2.32.857 3.294A5.266 5.266 0 013.16 5.337a45.6 45.6 0 012.006-.348zm13.668 8.04c-.455 1.637-1.682 2.944-3.235 3.518V19.5h3.235v-6.21zM7.16 19.5h3.235v-2.625c-1.553-.574-2.78-1.88-3.235-3.518H7.16v6.143zM16.54 9.554A5.266 5.266 0 0118.835 5.29c.71.112 1.396.228 2.005.348a6.766 6.766 0 00-.857 3.294v.62z" clip-rule="evenodd" />
                                     </svg>
-                                    Champion
+                                    Finals
                                 </span>
                             @elseif($loop->iteration == $loop->count - 1)
-                                Finals
-                            @elseif($loop->iteration == $loop->count - 2)
                                 Semi-Finals
+                            @elseif($loop->iteration == $loop->count - 2)
+                                Quarter-Finals
                             @else
                                 Round {{ $round }}
                             @endif
@@ -39,59 +39,79 @@
 
                     @foreach($matches as $match)
                         {{-- Match Card --}}
-                        <div class="relative bg-white rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-gray-100 hover:ring-primary/50 transition-all duration-300 group">
+                        <div class="relative bg-white rounded-lg shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-gray-100 hover:ring-primary/50 transition-all duration-300 group {{ isset($isAdmin) && $isAdmin && $match->participant2 ? 'cursor-pointer hover:shadow-xl' : '' }}"
+                             @if(isset($isAdmin) && $isAdmin && $match->participant2) @click='openModal(@json($match))' @endif>
 
                             {{-- Connector Lines (Right side) --}}
                             @if(!$loop->parent->last)
                                 <div class="absolute top-1/2 -right-8 w-8 h-px bg-gray-200 group-hover:bg-primary/30 transition-colors"></div>
                             @endif
 
-                            {{-- Match Content --}}
-                            <div class="py-3 px-4">
-                                {{-- Participant 1 --}}
-                                <div class="flex justify-between items-center mb-3">
-                                    <div class="flex items-center gap-3 overflow-hidden">
-                                        <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold border border-gray-100">
-                                            {{ $match->participant1?->seed ?? '-' }}
+                             {{-- Special "Bye" Rendering: ONLY if exactly one participant is present --}}
+                            @if(false)
+                                {{-- Auto-Advanced Removed --}}
+                            @else
+                                {{-- Standard Match Content (Both present OR Both empty/pending) --}}
+                                {{-- Standard Match Content (Both present OR Both empty/pending) --}}
+                                <div class="py-3 px-4">
+                                    {{-- Participant 1 --}}
+                                    <div class="flex justify-between items-center mb-3">
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold border border-gray-100">
+                                                {{ $match->participant1?->seed ?? '-' }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-semibold truncate {{ $match->winner_id && $match->winner_id == $match->participant_1_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_1_id ? 'text-gray-300 line-through decoration-gray-200' : 'text-gray-600') }}">
+                                                    {{ $match->participant1?->name ?? 'TBD' }}
+                                                </span>
+                                                @if($match->participant1)
+                                                    <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{{ $match->participant1->affiliation }}</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-semibold truncate {{ $match->winner_id == $match->participant_1_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_1_id ? 'text-gray-300 line-through decoration-gray-200' : 'text-gray-600') }}">
-                                                {{ $match->participant1?->name ?? 'Bye' }}
-                                            </span>
-                                            @if($match->participant1)
-                                                <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{{ $match->participant1->affiliation }}</span>
+                                        <div class="flex items-center gap-2">
+                                            @if($match->participant_1_score > 0 || $match->participant_2_score > 0)
+                                                <span class="font-bold {{ $match->winner_id == $match->participant_1_id ? 'text-green-600' : 'text-gray-400' }}">
+                                                    {{ $match->participant_1_score }}
+                                                </span>
+                                            @endif
+                                            @if($match->winner_id && $match->winner_id == $match->participant_1_id)
+                                                <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                                             @endif
                                         </div>
                                     </div>
-                                    @if($match->winner_id == $match->participant_1_id)
-                                        <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                    @endif
-                                </div>
 
-                                {{-- Divider --}}
-                                <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-100 to-transparent my-1"></div>
+                                    {{-- Divider --}}
+                                    <div class="h-px w-full bg-gradient-to-r from-transparent via-gray-100 to-transparent my-1"></div>
 
-                                {{-- Participant 2 --}}
-                                <div class="flex justify-between items-center mt-3">
-                                    <div class="flex items-center gap-3 overflow-hidden">
-                                        <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold border border-gray-100">
-                                            {{ $match->participant2?->seed ?? '-' }}
+                                    {{-- Participant 2 --}}
+                                    <div class="flex justify-between items-center mt-3">
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-xs text-gray-400 font-bold border border-gray-100">
+                                                {{ $match->participant2?->seed ?? '-' }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-semibold truncate {{ $match->winner_id && $match->winner_id == $match->participant_2_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_2_id ? 'text-gray-300 line-through decoration-gray-200' : 'text-gray-600') }}">
+                                                    {{ $match->participant2?->name ?? 'TBD' }}
+                                                </span>
+                                                @if($match->participant2)
+                                                    <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{{ $match->participant2->affiliation }}</span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-sm font-semibold truncate {{ $match->winner_id == $match->participant_2_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_2_id ? 'text-gray-300 line-through decoration-gray-200' : 'text-gray-600') }}">
-                                                {{ $match->participant2?->name ?? 'Bye' }}
-                                            </span>
-                                            @if($match->participant2)
-                                                <span class="text-[10px] text-gray-400 uppercase tracking-wider font-medium">{{ $match->participant2->affiliation }}</span>
+                                        <div class="flex items-center gap-2">
+                                            @if($match->participant_1_score > 0 || $match->participant_2_score > 0)
+                                                <span class="font-bold {{ $match->winner_id == $match->participant_2_id ? 'text-green-600' : 'text-gray-400' }}">
+                                                    {{ $match->participant_2_score }}
+                                                </span>
+                                            @endif
+                                            @if($match->winner_id && $match->winner_id == $match->participant_2_id)
+                                                <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
                                             @endif
                                         </div>
                                     </div>
-                                    @if($match->winner_id == $match->participant_2_id)
-                                        <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                    @endif
                                 </div>
-                            </div>
-
+                            @endif
                         </div>
                     @endforeach
                 </div>

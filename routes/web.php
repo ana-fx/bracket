@@ -45,11 +45,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     // Admin View (Managed)
     Route::get('/tournaments/{tournament}', [TournamentController::class, 'adminShow'])->name('admin.tournaments.show');
+
+    // Match Management
+    Route::put('/matches/{match}', [TournamentController::class, 'updateMatch'])->name('matches.update');
+
 });
 
 Route::get('/tournaments/{tournament}', [TournamentController::class, 'show'])->name('tournaments.show');
-
-
-
-
-

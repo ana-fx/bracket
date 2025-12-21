@@ -11,6 +11,9 @@ class TournamentMatch extends Model
 
     protected $table = 'matches'; // Explicitly set table
 
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'tournament_id',
         'round',
@@ -18,6 +21,8 @@ class TournamentMatch extends Model
         'next_match_id',
         'participant_1_id',
         'participant_2_id',
+        'participant_1_score',
+        'participant_2_score',
         'winner_id'
     ];
 

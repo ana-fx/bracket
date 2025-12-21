@@ -43,14 +43,25 @@
             <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-gray-700 font-bold mb-2">Start Date</label>
-                    <input type="date" name="start_date" value="{{ old('start_date') }}" class="w-full px-4 py-3 rounded-xl border {{ $errors->has('start_date') ? 'border-red-500' : 'border-gray-200' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                    <input type="date" name="start_date" value="{{ old('start_date') }}" class="datepicker w-full px-4 py-3 rounded-xl border {{ $errors->has('start_date') ? 'border-red-500' : 'border-gray-200' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-white" placeholder="Select Start Date">
                     @error('start_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-gray-700 font-bold mb-2">End Date</label>
-                    <input type="date" name="end_date" value="{{ old('end_date') }}" class="w-full px-4 py-3 rounded-xl border {{ $errors->has('end_date') ? 'border-red-500' : 'border-gray-200' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                    <input type="date" name="end_date" value="{{ old('end_date') }}" class="datepicker w-full px-4 py-3 rounded-xl border {{ $errors->has('end_date') ? 'border-red-500' : 'border-gray-200' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-white" placeholder="Select End Date">
                     @error('end_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">Match Format (Best Of)</label>
+                <select name="best_of" class="w-full px-4 py-3 rounded-xl border {{ $errors->has('best_of') ? 'border-red-500' : 'border-gray-200' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none bg-white">
+                    <option value="1" selected>Best of 1 (Single Match)</option>
+                    <option value="3">Best of 3</option>
+                    <option value="5">Best of 5</option>
+                    <option value="7">Best of 7</option>
+                </select>
+                @error('best_of') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="mb-6">
@@ -117,6 +128,17 @@
                         previewContainer.classList.add('hidden');
                     }
                 }
+
+                // Initialize Datepicker
+                document.addEventListener('DOMContentLoaded', function() {
+                    flatpickr(".datepicker", {
+                        altInput: true,
+                        altFormat: "F j, Y",
+                        dateFormat: "Y-m-d",
+                        minDate: "today",
+                        theme: "airbnb"
+                    });
+                });
             </script>
 
 

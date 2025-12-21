@@ -22,6 +22,9 @@ return new class extends Migration
             $table->foreignUuid('participant_1_id')->nullable()->constrained('participants')->nullOnDelete();
             $table->foreignUuid('participant_2_id')->nullable()->constrained('participants')->nullOnDelete();
 
+            $table->integer('participant_1_score')->default(0);
+            $table->integer('participant_2_score')->default(0);
+
             $table->foreignUuid('winner_id')->nullable()->constrained('participants')->nullOnDelete();
 
             $table->timestamps();
