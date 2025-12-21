@@ -16,12 +16,18 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::firstOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => 'admin@admin.com'],
             [
-                'name' => 'Test User',
-                'password' => 'password',
+                'name' => 'Admin',
+                'password' => bcrypt('Admin123'),
                 'email_verified_at' => now(),
             ]
+
         );
+
+        $this->call([
+            TournamentSeeder::class,
+        ]);
+
     }
 }
