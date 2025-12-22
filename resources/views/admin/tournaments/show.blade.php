@@ -104,7 +104,7 @@
                              class="pointer-events-auto w-screen max-w-md"
                              @click.stop="">
 
-                            <form :action="actionUrl" method="POST" class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                            <form @submit.prevent="submitScore" class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                                 @csrf
                                 @method('PUT')
 
@@ -183,12 +183,79 @@
                 p2Score: 0,
                 actionUrl: '',
 
+                async submitScore() {
+                    try {
+                        const response = await fetch(this.actionUrl, {
+                            method: 'POST', // Actually PUT via _method
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                _method: 'PUT',
+                                participant_1_score: this.p1Score,
+                                participant_2_score: this.p2Score
+                            })
+                        });
+
+                        const contentType = response.headers.get("content-type");
+                        let data;
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            data = await response.json();
+                        } else {
+                            // If not JSON, it's likely an error page (500)
+                            const text = await response.text();
+                            console.error("Non-JSON Response:", text);
+                            throw new Error(`Server returned standard error (${response.status}). Check console for details.`);
+                        }
+
+                        if (!response.ok) {
+                            if (response.status === 422) {
+                                // Validation Error
+                                const errors = Object.values(data.errors).flat().join('\n');
+                                window.dispatchEvent(new CustomEvent('notify', {
+                                    detail: {
+                                        message: data.message || 'Validation Failed',
+                                        type: 'error',
+                                        description: errors
+                                    }
+                                }));
+                            } else {
+                                throw new Error(data.message || 'Something went wrong');
+                            }
+                            return;
+                        }
+
+                        // Success
+                        window.dispatchEvent(new CustomEvent('notify', {
+                            detail: {
+                                message: 'Match Updated',
+                                type: 'success'
+                            }
+                        }));
+
+                        this.closeModal();
+                        // Reload page to reflect bracket changes (unless we want to update DOM dynamically, but full reload is safer for bracket status)
+                        setTimeout(() => window.location.reload(), 500);
+
+                    } catch (error) {
+                        window.dispatchEvent(new CustomEvent('notify', {
+                            detail: {
+                                message: 'Error',
+                                type: 'error',
+                                description: error.message
+                            }
+                        }));
+                    }
+                },
+
                 openModal(match) {
                     this.p1Name = match.participant1 ? match.participant1.name : 'Bye';
                     this.p2Name = match.participant2 ? match.participant2.name : 'Bye';
                     this.p1Score = match.participant_1_score;
                     this.p2Score = match.participant_2_score;
-                    this.actionUrl = `/matches/${match.id}`;
+                    this.actionUrl = `/admin/matches/${match.id}`;
                     this.isOpen = true;
                 },
 

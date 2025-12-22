@@ -212,60 +212,82 @@ class TournamentController extends Controller
 
     public function updateMatch(Request $request, \App\Models\TournamentMatch $match)
     {
-        $match->load('tournament');
+        try {
+            $match->load('tournament');
 
-        if ($match->tournament->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'participant_1_score' => 'required|integer|min:0',
-            'participant_2_score' => 'required|integer|min:0',
-        ]);
-
-        $match->update([
-            'participant_1_score' => $request->participant_1_score,
-            'participant_2_score' => $request->participant_2_score,
-        ]);
-
-        // Auto-Detect Winner Logic based on Best Of
-        $bestOf = $match->tournament->best_of;
-        $winsNeeded = ceil($bestOf / 2);
-
-        $winnerId = null;
-
-        if ($match->participant_1_score >= $winsNeeded) {
-            $winnerId = $match->participant_1_id;
-        } elseif ($match->participant_2_score >= $winsNeeded) {
-            $winnerId = $match->participant_2_id;
-        }
-
-        if ($winnerId && $winnerId !== $match->winner_id) {
-            $match->update(['winner_id' => $winnerId]);
-
-            // Advance Winner to Next Match if exists
-            if ($match->next_match_id) {
-                $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
-                if ($nextMatch) {
-                    $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
-                    $nextMatch->update([$slot => $winnerId]);
-                }
+            if ($match->tournament->user_id !== Auth::id()) {
+                abort(403);
             }
-        } elseif (!$winnerId && $match->winner_id) {
-             // Score changed back to non-winning? Revoke winner.
-             $lastWinnerId = $match->winner_id;
-             $match->update(['winner_id' => null]);
 
-             if ($match->next_match_id) {
-                 $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
-                 $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
-                 // Only clear if it held the old winner
-                 if ($nextMatch && $nextMatch->$slot == $lastWinnerId) {
-                     $nextMatch->update([$slot => null]);
+            $bestOf = $match->tournament->best_of;
+            $winsNeeded = ceil($bestOf / 2);
+
+            $request->validate([
+                'participant_1_score' => 'required|integer|min:0|max:' . $winsNeeded,
+                'participant_2_score' => 'required|integer|min:0|max:' . $winsNeeded,
+            ]);
+
+            $match->update([
+                'participant_1_score' => $request->participant_1_score,
+                'participant_2_score' => $request->participant_2_score,
+            ]);
+
+            // Auto-Detect Winner Logic based on Best Of
+            $bestOf = $match->tournament->best_of;
+            $winsNeeded = ceil($bestOf / 2);
+
+            $winnerId = null;
+
+            if ($match->participant_1_score >= $winsNeeded) {
+                $winnerId = $match->participant_1_id;
+            } elseif ($match->participant_2_score >= $winsNeeded) {
+                $winnerId = $match->participant_2_id;
+            }
+
+            if ($winnerId && $winnerId !== $match->winner_id) {
+                $match->update(['winner_id' => $winnerId]);
+
+                // Advance Winner to Next Match if exists
+                if ($match->next_match_id) {
+                    $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
+                    if ($nextMatch) {
+                        $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
+                        $nextMatch->update([$slot => $winnerId]);
+                    }
+                }
+            } elseif (!$winnerId && $match->winner_id) {
+                 // Score changed back to non-winning? Revoke winner.
+                 $lastWinnerId = $match->winner_id;
+                 $match->update(['winner_id' => null]);
+
+                 if ($match->next_match_id) {
+                     $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
+                     if ($nextMatch) {
+                         // Check which slot to clear
+                         $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
+                         // Only clear if it held the old winner
+                         if ($nextMatch->$slot == $lastWinnerId) {
+                             $nextMatch->update([$slot => null]);
+                         }
+                     }
                  }
-             }
-        }
+            }
 
-        return back()->with('success', 'Match updated.');
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Match updated.', 'match' => $match]);
+            }
+
+            return back()->with('success', 'Match updated.');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Update Match Error: ' . $e->getMessage());
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Server Error: ' . $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ], 500);
+            }
+            throw $e;
+        }
     }
 }

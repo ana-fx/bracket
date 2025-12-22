@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin - {{ config('app.name', 'Laravel') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -76,7 +77,7 @@
                 {{-- Toast Notification Container --}}
                 <div x-data="toastHandler()"
                      class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 w-full max-w-sm pointer-events-none"
-                     @notify.window="add($event.detail.message, $event.detail.type)">
+                     @notify.window="add($event.detail.message, $event.detail.type, $event.detail.description)">
 
                     <template x-for="toast in toasts" :key="toast.id">
                         <div x-show="toast.show"
@@ -103,6 +104,9 @@
 
                             <div class="flex-1 pt-0.5">
                                 <p class="text-sm font-medium text-gray-900" x-text="toast.message"></p>
+                                <template x-if="toast.description">
+                                    <p class="mt-1 text-sm text-gray-500" x-text="toast.description"></p>
+                                </template>
                             </div>
 
                             <div class="flex-shrink-0 flex">
@@ -132,10 +136,10 @@
                                 this.add("{{ session('error') }}", 'error');
                             @endif
                         },
-                        add(message, type = 'success') {
+                        add(message, type = 'success', description = null) {
                             const id = Date.now();
-                            this.toasts.push({ id, message, type, show: true });
-                            setTimeout(() => this.remove(id), 5000); // Auto remove after 5s
+                            this.toasts.push({ id, message, type, description, show: true });
+                            setTimeout(() => this.remove(id), 8000); // Increased time to read error
                         },
                         remove(id) {
                             const index = this.toasts.findIndex(t => t.id === id);
