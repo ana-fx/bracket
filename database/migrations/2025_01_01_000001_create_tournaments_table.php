@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('tournaments', function (Blueprint $table) {
@@ -19,7 +18,6 @@ return new class extends Migration
             $table->text('location_map')->nullable();
             $table->text('terms_and_conditions')->nullable();
             $table->enum('status', ['draft', 'active', 'completed'])->default('draft');
-            $table->integer('best_of')->default(1); // 1 = Single Match, 3 = BO3, etc.
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // Creator
             $table->timestamps();
         });

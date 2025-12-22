@@ -37,6 +37,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Participants Step
     Route::get('/tournaments/{tournament}/participants', [TournamentController::class, 'participants'])->name('tournaments.participants');
     Route::post('/tournaments/{tournament}/participants', [TournamentController::class, 'storeParticipants'])->name('tournaments.participants.store');
+    Route::put('/tournaments/{tournament}/participants/{participant}', [TournamentController::class, 'updateParticipant'])->name('participants.update');
     Route::delete('/tournaments/{tournament}/participants/{participant}', [TournamentController::class, 'destroyParticipant'])->name('participants.destroy');
     Route::post('/tournaments/{tournament}/randomize', [TournamentController::class, 'randomize'])->name('tournaments.randomize');
 

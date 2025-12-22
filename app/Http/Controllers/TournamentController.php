@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class TournamentController extends Controller
-
 {
     public function index()
     {
@@ -42,7 +41,6 @@ class TournamentController extends Controller
             'location' => 'nullable|string',
             'location_map' => 'nullable|string',
             'terms_and_conditions' => 'nullable|string',
-            'best_of' => 'nullable|integer|in:1,3,5,7',
         ]);
 
         $coverPath = null;
@@ -61,7 +59,6 @@ class TournamentController extends Controller
             'terms_and_conditions' => $request->terms_and_conditions,
             'user_id' => Auth::id() ?? 1,
             'status' => 'draft',
-            'best_of' => $request->best_of ?? 1,
         ]);
 
 
@@ -92,7 +89,6 @@ class TournamentController extends Controller
             'location' => 'nullable|string',
             'location_map' => 'nullable|string',
             'terms_and_conditions' => 'nullable|string',
-            'best_of' => 'nullable|integer|in:1,3,5,7',
         ]);
 
         if ($request->hasFile('cover_image')) {
@@ -109,7 +105,6 @@ class TournamentController extends Controller
         $tournament->location = $request->location;
         $tournament->location_map = $request->location_map;
         $tournament->terms_and_conditions = $request->terms_and_conditions;
-        $tournament->best_of = $request->best_of ?? 1;
         $tournament->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Tournament updated successfully.');
@@ -134,29 +129,93 @@ class TournamentController extends Controller
 
     public function storeParticipants(Request $request, Tournament $tournament)
     {
-        $request->validate(['participants' => 'required|string']);
+        // Check if it's a bulk add or single add
+        if ($request->filled('participants')) {
+            $request->validate(['participants' => 'required|string']);
+            $names = explode("\n", $request->participants);
+            $names = array_map('trim', $names);
+            $names = array_filter($names);
 
-        $names = explode("\n", $request->participants);
-        $names = array_map('trim', $names);
-        $names = array_filter($names);
-
-        foreach ($names as $name) {
-            if (!empty($name)) {
-                Participant::create([
-                    'tournament_id' => $tournament->id,
-                    'name' => $name,
-                    'seed' => 0,
-                ]);
+            foreach ($names as $name) {
+                if (!empty($name)) {
+                    Participant::create([
+                        'tournament_id' => $tournament->id,
+                        'name' => $name,
+                        'seed' => 0,
+                    ]);
+                }
             }
+            return redirect()->route('tournaments.participants', $tournament)->with('success', 'Participants added.');
         }
 
-        return redirect()->route('tournaments.participants', $tournament)->with('success', 'Participants added.');
+        // Single Add Logic
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'dojo' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('participants', 'public');
+        }
+
+        Participant::create([
+            'tournament_id' => $tournament->id,
+            'name' => $request->name,
+            'dojo' => $request->dojo,
+            'image_path' => $imagePath,
+            'seed' => 0,
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Participant added.',
+                'participant' => Participant::where('tournament_id', $tournament->id)->latest()->first()
+            ]);
+        }
+
+        return redirect()->route('tournaments.participants', $tournament)->with('success', 'Participant added.');
     }
 
     public function destroyParticipant(Tournament $tournament, Participant $participant)
     {
         $participant->delete();
         return back()->with('success', 'Participant removed.');
+    }
+
+    public function updateParticipant(Request $request, Tournament $tournament, Participant $participant)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'dojo' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'dojo' => $request->dojo,
+        ];
+
+        if ($request->hasFile('image')) {
+            // Delete old image if needed (optional)
+            $path = $request->file('image')->store('participants', 'public');
+            $data['image_path'] = $path;
+        }
+
+        $participant->update($data);
+
+        $participant->update($data);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Participant updated.',
+                // Return new data so frontend can update DOM if needed without reload
+                'participant' => $participant->fresh()
+            ]);
+        }
+
+        return back()->with('success', 'Participant updated.');
     }
 
     public function randomize(Tournament $tournament, BracketService $bracketService)
@@ -219,12 +278,11 @@ class TournamentController extends Controller
                 abort(403);
             }
 
-            $bestOf = $match->tournament->best_of;
-            $winsNeeded = ceil($bestOf / 2);
+
 
             $request->validate([
-                'participant_1_score' => 'required|integer|min:0|max:' . $winsNeeded,
-                'participant_2_score' => 'required|integer|min:0|max:' . $winsNeeded,
+                'participant_1_score' => 'required|integer|min:0|max:99',
+                'participant_2_score' => 'required|integer|min:0|max:99',
             ]);
 
             $match->update([
@@ -232,16 +290,39 @@ class TournamentController extends Controller
                 'participant_2_score' => $request->participant_2_score,
             ]);
 
-            // Auto-Detect Winner Logic based on Best Of
-            $bestOf = $match->tournament->best_of;
-            $winsNeeded = ceil($bestOf / 2);
+
 
             $winnerId = null;
+            $history = $match->score_history ?? [];
 
-            if ($match->participant_1_score >= $winsNeeded) {
+            if ($match->participant_1_score > $match->participant_2_score) {
+                // P1 Wins
                 $winnerId = $match->participant_1_id;
-            } elseif ($match->participant_2_score >= $winsNeeded) {
+            } elseif ($match->participant_2_score > $match->participant_1_score) {
+                // P2 Wins
                 $winnerId = $match->participant_2_id;
+            } else {
+                // DRAW - Start Rematch Loop
+                // 1. Add current score to history
+                $history[] = [
+                    'p1' => $match->participant_1_score,
+                    'p2' => $match->participant_2_score,
+                    'reason' => 'Draw'
+                ];
+
+                // 2. Reset scores for next match
+                $match->update([
+                    'score_history' => $history,
+                    'participant_1_score' => 0,
+                    'participant_2_score' => 0,
+                    'winner_id' => null // Ensure no winner is set
+                ]);
+
+                // Return early so we don't process advance/revoke logic
+                if ($request->wantsJson()) {
+                    return response()->json(['message' => 'Draw detected. Rematch started.', 'match' => $match]);
+                }
+                return back()->with('success', 'Draw! Rematch started.');
             }
 
             if ($winnerId && $winnerId !== $match->winner_id) {
@@ -256,21 +337,21 @@ class TournamentController extends Controller
                     }
                 }
             } elseif (!$winnerId && $match->winner_id) {
-                 // Score changed back to non-winning? Revoke winner.
-                 $lastWinnerId = $match->winner_id;
-                 $match->update(['winner_id' => null]);
+                // Score changed back to non-winning? Revoke winner.
+                $lastWinnerId = $match->winner_id;
+                $match->update(['winner_id' => null]);
 
-                 if ($match->next_match_id) {
-                     $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
-                     if ($nextMatch) {
-                         // Check which slot to clear
-                         $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
-                         // Only clear if it held the old winner
-                         if ($nextMatch->$slot == $lastWinnerId) {
-                             $nextMatch->update([$slot => null]);
-                         }
-                     }
-                 }
+                if ($match->next_match_id) {
+                    $nextMatch = \App\Models\TournamentMatch::find($match->next_match_id);
+                    if ($nextMatch) {
+                        // Check which slot to clear
+                        $slot = ($match->match_number % 2 != 0) ? 'participant_1_id' : 'participant_2_id';
+                        // Only clear if it held the old winner
+                        if ($nextMatch->$slot == $lastWinnerId) {
+                            $nextMatch->update([$slot => null]);
+                        }
+                    }
+                }
             }
 
             if ($request->wantsJson()) {

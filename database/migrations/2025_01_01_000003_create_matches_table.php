@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('matches', function (Blueprint $table) {
@@ -25,6 +24,7 @@ return new class extends Migration
             $table->integer('participant_1_score')->default(0);
             $table->integer('participant_2_score')->default(0);
 
+            $table->json('score_history')->nullable(); // Stores previous draw scores
             $table->foreignUuid('winner_id')->nullable()->constrained('participants')->nullOnDelete();
 
             $table->timestamps();

@@ -22,8 +22,14 @@ class TournamentMatch extends Model
         'participant_1_id',
         'participant_2_id',
         'participant_1_score',
+        'participant_1_score',
         'participant_2_score',
+        'score_history',
         'winner_id'
+    ];
+
+    protected $casts = [
+        'score_history' => 'array',
     ];
 
     public function tournament()

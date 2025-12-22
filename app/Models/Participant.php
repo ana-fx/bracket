@@ -9,7 +9,7 @@ class Participant extends Model
 {
     use HasUuids;
 
-    protected $fillable = ['name', 'affiliation', 'seed', 'tournament_id'];
+    protected $fillable = ['name', 'dojo', 'image_path', 'affiliation', 'seed', 'tournament_id'];
 
     public function tournament()
     {

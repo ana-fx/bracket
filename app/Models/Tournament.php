@@ -19,7 +19,6 @@ class Tournament extends Model
         'location_map',
         'terms_and_conditions',
         'status',
-        'best_of',
         'user_id'
     ];
 

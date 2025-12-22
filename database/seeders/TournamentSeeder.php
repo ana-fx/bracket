@@ -32,11 +32,14 @@ class TournamentSeeder extends Seeder
             'terms_and_conditions' => "1. All participants must be active university students.\n2. Gi and No-Gi divisions available.\n3. IBJJF rules apply.\n4. Liability waiver must be signed before weighing in.",
             'status' => 'active',
             'user_id' => $user->id,
-            'best_of' => 3, // BO3 for Finals mainly
         ]);
 
         $participants1 = [
-            'Rizky Pratama (UMPO)', 'Siti Aminah (UNIDA)', 'Budi Santoso (IARA)', 'Dewi Lestari (UMPO)', 'Agus Kurniawan (UNMER)'
+            'Rizky Pratama (UMPO)',
+            'Siti Aminah (UNIDA)',
+            'Budi Santoso (IARA)',
+            'Dewi Lestari (UMPO)',
+            'Agus Kurniawan (UNMER)'
         ];
 
         foreach ($participants1 as $name) {
@@ -52,7 +55,6 @@ class TournamentSeeder extends Seeder
             'location' => 'UKM Dojo',
             'status' => 'draft',
             'user_id' => $user->id,
-            'best_of' => 1, // BO1
         ]);
 
         $participants2 = ['Member A', 'Member B', 'Member C', 'Member D', 'Member E', 'Member F'];
