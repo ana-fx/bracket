@@ -28,6 +28,37 @@
                         {{ $tournament->name }}
                     </h1>
 
+                    <div class="flex flex-wrap items-center gap-6 mb-6 text-white/90">
+                        @if($tournament->start_date)
+                            <div class="flex items-center gap-2 backdrop-blur-sm bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-5 h-5 text-primary-300">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0h18M5.25 12h13.5h-13.5zm0 4.5h13.5h-13.5z" />
+                                </svg>
+                                <span class="font-medium">
+                                    {{ \Carbon\Carbon::parse($tournament->start_date)->format('M d, Y') }}
+                                    @if($tournament->end_date && $tournament->end_date != $tournament->start_date)
+                                        - {{ \Carbon\Carbon::parse($tournament->end_date)->format('M d, Y') }}
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
+
+                        @if($tournament->location)
+                            <div class="flex items-center gap-2 backdrop-blur-sm bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-5 h-5 text-red-300">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                </svg>
+                                <span class="font-medium">{{ $tournament->location }}</span>
+                            </div>
+                        @endif
+                    </div>
+
                     @if($tournament->description)
                         <p class="text-gray-200 text-lg md:text-xl max-w-2xl font-light leading-relaxed drop-shadow">
                             {{ $tournament->description }}
@@ -37,7 +68,7 @@
             </div>
         </div>
 
-        <div class="container mx-auto px-4 -mt-10 mb-20 relative z-30" x-data="publicMatchModal()">
+        <div class="w-full px-4 -mt-10 mb-20 relative z-30" x-data="publicMatchModal()">
             @include('partials.bracket')
 
             <!-- Read-Only Match Detail Modal -->
@@ -164,6 +195,49 @@
                 </div>
             </div>
         </div>
+
+        {{-- Tournament Info Section --}}
+        @if($tournament->location_map || $tournament->terms_and_conditions)
+            <div class="bg-white py-20 relative z-20">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">Tournament Info</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        @if($tournament->location_map)
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    Location
+                                </h3>
+                                <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 h-[400px] bg-gray-100">
+                                    {!! $tournament->location_map !!}
+                                </div>
+                                <p class="text-gray-500 font-medium text-center">{{ $tournament->location }}</p>
+                            </div>
+                        @endif
+
+                        @if($tournament->terms_and_conditions)
+                            <div class="space-y-4">
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                    <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Rules & Terms
+                                </h3>
+                                <div class="bg-gray-50 p-8 rounded-2xl shadow-inner border border-gray-200 prose max-w-none text-gray-600">
+                                    {!! nl2br(e($tournament->terms_and_conditions)) !!}
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <script>
             function publicMatchModal() {

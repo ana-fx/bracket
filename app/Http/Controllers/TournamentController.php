@@ -123,6 +123,10 @@ class TournamentController extends Controller
 
     public function participants(Tournament $tournament)
     {
+        if ($tournament->hasActiveMatches()) {
+            return redirect()->route('admin.tournaments.show', $tournament)->with('error', 'Cannot manage participants once the tournament has started.');
+        }
+
         $participants = $tournament->participants()->orderBy('created_at')->get();
         return view('admin.tournaments.participants', compact('tournament', 'participants'));
     }

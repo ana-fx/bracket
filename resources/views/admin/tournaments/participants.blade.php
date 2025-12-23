@@ -314,7 +314,7 @@
                             <span>Generate Bracket</span>
                         </button>
                     </form>
-                @endif
+
 
                     <script>
                         function confirmGeneration(e) {

@@ -5,7 +5,7 @@
     <div class="min-h-screen bg-gray-50/50">
         <!-- Admin Header -->
         <div class="bg-white border-b border-gray-200">
-            <div class="container mx-auto px-6 py-8">
+            <div class="w-full px-6 py-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <span
@@ -25,7 +25,7 @@
                         </a>
 
                         @if(!$tournament->hasActiveMatches())
-                                    <button @click="$dispatch('open-add-participant-modal')"
+                            <button @click="$dispatch('open-add-participant-modal')"
                                 class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="w-5 h-5">
@@ -92,7 +92,7 @@
             </script>
         @endif
 
-        <div class="container mx-auto px-4 py-8" x-data="matchModal()">
+        <div class="w-full px-4 py-8" x-data="matchModal()">
             @include('partials.bracket', ['isAdmin' => true])
 
             <!-- Match Score Drawer -->
