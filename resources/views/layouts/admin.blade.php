@@ -9,9 +9,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Flatpickr -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
     <style>
         [x-cloak] {
             display: none !important;
@@ -183,6 +183,7 @@
         </div>
     </div>
 
+    @stack('scripts')
 </body>
 
 </html>

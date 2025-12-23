@@ -19,6 +19,15 @@
 
                     <div class="flex gap-3">
 
+                        <button onclick="window.print()"
+                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2 no-print">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.618 0-1.113-.497-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                            </svg>
+                            Print Bracket
+                        </button>
+
                         <a href="{{ route('tournaments.edit', $tournament) }}"
                             class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">
                             Settings
@@ -497,6 +506,56 @@
             });
         </script>
 @endsection
+
+@push('scripts')
+    <style>
+        @media print {
+            /* 1. Hide everything on the page */
+            body * {
+                visibility: hidden !important;
+            }
+
+            /* 2. Specifically show ONLY the bracket wrapper and its content */
+            #bracket-wrapper,
+            #bracket-wrapper * {
+                visibility: visible !important;
+            }
+
+            /* 3. Position the bracket at the absolute top-left for zero waste */
+            #bracket-wrapper {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                transform: scale(0.9); /* Adjust to ensure it fits landscape paper */
+                transform-origin: top left;
+            }
+
+            /* 4. Completely remove non-bracket layout blocks to prevent empty pages/spacing */
+            header, nav, footer, aside, .no-print, .toast-container, [class*="bg-white border-b"] {
+                display: none !important;
+            }
+
+            /* 5. Landscape Optimization */
+            @page {
+                size: landscape;
+                margin: 0.5cm;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            /* Ensure background colors and paths are printed */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+@endpush
     <!-- Add Participant Modal -->
     <div x-data="participantAddModal" class="relative z-[60]" aria-labelledby="modal-title" role="dialog"
         aria-modal="true" x-show="isOpen" style="display: none;">

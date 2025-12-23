@@ -81,7 +81,11 @@
                                         <!-- Sidebar (Image) -->
                                         <div class="w-16 flex-shrink-0 bg-red-600 flex items-center justify-center border-r border-red-700">
                                             @if($match->participant1 && $match->participant1->image_path)
-                                                <img src="{{ asset('storage/' . $match->participant1->image_path) }}" alt="{{ $match->participant1->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-white/20">
+                                                <img src="{{ asset('storage/' . $match->participant1->image_path) }}"
+                                                     alt="{{ $match->participant1->name }}"
+                                                     crossorigin="anonymous"
+                                                     onerror="this.style.display='none'; this.setAttribute('data-img-error', 'true');"
+                                                     class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-white/20">
                                             @else
                                                 <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
                                                     <span class="text-xs text-red-600 font-bold">{{ $match->participant1?->seed ?? '-' }}</span>
@@ -136,7 +140,11 @@
                                         <!-- Sidebar (Image) -->
                                         <div class="w-16 flex-shrink-0 bg-blue-600 flex items-center justify-center border-r border-blue-700">
                                             @if($match->participant2 && $match->participant2->image_path)
-                                                <img src="{{ asset('storage/' . $match->participant2->image_path) }}" alt="{{ $match->participant2->name }}" class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-white/20">
+                                                <img src="{{ asset('storage/' . $match->participant2->image_path) }}"
+                                                     alt="{{ $match->participant2->name }}"
+                                                     crossorigin="anonymous"
+                                                     onerror="this.style.display='none'; this.setAttribute('data-img-error', 'true');"
+                                                     class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-white/20">
                                             @else
                                                 <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">
                                                     <span class="text-xs text-blue-600 font-bold">{{ $match->participant2?->seed ?? '-' }}</span>
@@ -246,8 +254,8 @@
                 const p2Rect = p2Card.getBoundingClientRect();
                 const nextRect = nextMatch.getBoundingClientRect();
 
-                // Calculate Points 
-                // We subtract wrapperRect.left/top directly. 
+                // Calculate Points
+                // We subtract wrapperRect.left/top directly.
                 // Since wrapper and svg move together, lines stay anchored.
                 const p1RightX = p1Rect.right - wrapperRect.left;
                 const p1Y = p1Rect.top + p1Rect.height / 2 - wrapperRect.top;
@@ -268,8 +276,8 @@
 
                 const isP1Winner = safeWinnerId && safeWinnerId == safeP1Id;
                 const isP2Winner = safeWinnerId && safeWinnerId == safeP2Id;
-                const defaultColor = '#E5E7EB'; 
-                const highlightColor = '#A78BFA'; 
+                const defaultColor = '#E5E7EB';
+                const highlightColor = '#A78BFA';
                 const width = '2';
 
                 // Path 1

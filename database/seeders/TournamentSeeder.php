@@ -21,52 +21,63 @@ class TournamentSeeder extends Seeder
             ]
         );
 
-        // Tournament 1: Upcoming Major Event
-        $ponorogoOpen = Tournament::create([
-            'name' => 'Ponorogo Open Championship 2025',
-            'description' => 'The premier inter-university Jiu-Jitsu tournament in East Java. Gathering the best fighters for a weekend of technique and spirit.',
-            'start_date' => Carbon::parse('2025-02-15'),
-            'end_date' => Carbon::parse('2025-02-16'),
-            'location' => 'Auditorium Universitas Muhammadiyah Ponorogo',
-            'location_map' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.185672230248!2d111.45520731477755!3d-7.875649994326079!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e79a0248039603b%3A0x66c54728c7041793!2sUniversitas%20Muhammadiyah%20Ponorogo!5e0!3m2!1sen!2sid!4v1672323456789!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-            'terms_and_conditions' => "1. All participants must be active university students.\n2. Gi and No-Gi divisions available.\n3. IBJJF rules apply.\n4. Liability waiver must be signed before weighing in.",
+        // 1. Tournament with 6 Participants (Testing 8-slot bracket, 2 Byes)
+        $tournament6 = Tournament::create([
+            'name' => 'Demo: 6 Participants (8-Slot)',
+            'description' => 'Test case for Power-of-2 logic. Should generate 8 slots with 2 Byes.',
+            'start_date' => Carbon::now()->addDay(),
+            'end_date' => Carbon::now()->addDays(2),
+            'location' => 'Test Arena 1',
             'status' => 'active',
             'user_id' => $user->id,
+            'best_of' => 3
         ]);
 
-        $participants1 = [
-            'Rizky Pratama (UMPO)',
-            'Siti Aminah (UNIDA)',
-            'Budi Santoso (IARA)',
-            'Dewi Lestari (UMPO)',
-            'Agus Kurniawan (UNMER)'
+        $participants6 = [
+            'Player 1 (Seed 1)', 'Player 2 (Seed 2)', 'Player 3 (Seed 3)',
+            'Player 4 (Seed 4)', 'Player 5 (Seed 5)', 'Player 6 (Seed 6)'
         ];
 
-        foreach ($participants1 as $name) {
-            Participant::create(['tournament_id' => $ponorogoOpen->id, 'name' => $name, 'seed' => 0]);
+        foreach ($participants6 as $index => $name) {
+            Participant::create([
+                'tournament_id' => $tournament6->id,
+                'name' => $name,
+                'seed' => $index + 1 // 1-based seed
+            ]);
         }
 
-        // Tournament 2: Internal Selection
-        $internal = Tournament::create([
-            'name' => 'UKM Internal Selection',
-            'description' => 'Selection for the grand provincial team. Closed to internal UKM members only.',
-            'start_date' => Carbon::now()->addDays(5),
-            'end_date' => Carbon::now()->addDays(5),
-            'location' => 'UKM Dojo',
-            'status' => 'draft',
+        // Generate Bracket for 6
+        $bracketService = new \App\Services\BracketService();
+        $bracketService->generateBracket($tournament6);
+
+
+        // 2. Tournament with 13 Participants (Testing 16-slot bracket, 3 Byes)
+        $tournament13 = Tournament::create([
+            'name' => 'Demo: 13 Participants (16-Slot)',
+            'description' => 'Test case for Power-of-2 logic. Should generate 16 slots with 3 Byes.',
+            'start_date' => Carbon::now()->addWeek(),
+            'end_date' => Carbon::now()->addWeeks(2),
+            'location' => 'Test Arena 2',
+            'status' => 'active',
             'user_id' => $user->id,
+            'best_of' => 1
         ]);
 
-        $participants2 = ['Member A', 'Member B', 'Member C', 'Member D', 'Member E', 'Member F'];
-        foreach ($participants2 as $name) {
-            Participant::create(['tournament_id' => $internal->id, 'name' => $name, 'seed' => 0]);
+        $participants13 = [];
+        for ($i = 1; $i <= 13; $i++) {
+            $participants13[] = "Contender $i (Seed $i)";
         }
 
-        // Auto-generate bracket for Ponorogo Open
-        $bracketService = new \App\Services\BracketService();
-        $bracketService->generateBracket($ponorogoOpen);
+        foreach ($participants13 as $index => $name) {
+            Participant::create([
+                'tournament_id' => $tournament13->id,
+                'name' => $name,
+                'seed' => $index + 1
+            ]);
+        }
 
-        // Update status to active
-        $ponorogoOpen->update(['status' => 'active']);
+        // Generate Bracket for 13
+        $bracketService->generateBracket($tournament13);
+
     }
 }
