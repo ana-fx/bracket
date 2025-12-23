@@ -24,33 +24,35 @@
                             Settings
                         </a>
 
-                        <button @click="$dispatch('open-add-participant-modal')"
-                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Add Participant
-                        </button>
-
-                        @if(!$matchesByRound->isEmpty())
-                            <button type="button" onclick="runGacha(this)"
-                                class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-purple-600 shadow-sm flex items-center gap-2">
-                                <svg id="gacha-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        @if(!$tournament->hasActiveMatches())
+                                    <button @click="$dispatch('open-add-participant-modal')"
+                                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                                <svg id="gacha-spinner" class="animate-spin h-5 w-5 text-white hidden"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                                    </circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                <span id="gacha-text">Shuffle Bracket</span>
+                                Add Participant
                             </button>
+
+                            @if(!$matchesByRound->isEmpty())
+                                <button type="button" onclick="runGacha(this)"
+                                    class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-purple-600 shadow-sm flex items-center gap-2">
+                                    <svg id="gacha-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                    </svg>
+                                    <svg id="gacha-spinner" class="animate-spin h-5 w-5 text-white hidden"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                                        </circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    <span id="gacha-text">Shuffle Bracket</span>
+                                </button>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -496,63 +498,59 @@
         </script>
 @endsection
     <!-- Add Participant Modal -->
-    <div x-data="participantAddModal" 
-         class="relative z-[60]" 
-         aria-labelledby="modal-title" 
-         role="dialog" 
-         aria-modal="true" 
-         x-show="isOpen" 
-         style="display: none;">
-        
+    <div x-data="participantAddModal" class="relative z-[60]" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true" x-show="isOpen" style="display: none;">
+
         <!-- Backdrop -->
-        <div class="fixed inset-0 bg-gray-900/75 transition-opacity" 
-             x-show="isOpen"
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             aria-hidden="true"
-             @click="closeModal"></div>
+        <div class="fixed inset-0 bg-gray-900/75 transition-opacity" x-show="isOpen"
+            x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" aria-hidden="true"
+            @click="closeModal"></div>
 
         <div class="fixed inset-0 z-[60] w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                
+
                 <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-                     x-show="isOpen"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave="ease-in duration-200"
-                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-                    
+                    x-show="isOpen" x-transition:enter="ease-out duration-300"
+                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave="ease-in duration-200"
+                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+
                     <form @submit.prevent="submitParticipant">
                         <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                             <div class="sm:flex sm:items-start">
                                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                                    <h3 class="text-xl font-bold leading-6 text-gray-900" id="modal-title">Add New Participant</h3>
-                                    <p class="text-sm text-gray-500 mt-1">This will add a new participant. You may need to shuffle or regenerate the bracket.</p>
+                                    <h3 class="text-xl font-bold leading-6 text-gray-900" id="modal-title">Add New
+                                        Participant</h3>
+                                    <p class="text-sm text-gray-500 mt-1">This will add a new participant. You may need
+                                        to shuffle or regenerate the bracket.</p>
                                     <div class="mt-4 space-y-4">
-                                        
+
                                         <!-- Name -->
                                         <div>
                                             <label class="block text-sm font-bold text-gray-700">Name</label>
-                                            <input type="text" x-model="name" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm font-bold" required placeholder="Fighter Name">
+                                            <input type="text" x-model="name"
+                                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm font-bold"
+                                                required placeholder="Fighter Name">
                                         </div>
 
                                         <!-- Dojo -->
                                         <div>
                                             <label class="block text-sm font-bold text-gray-700">Dojo / Club</label>
-                                            <input type="text" x-model="dojo" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" placeholder="Club Name">
+                                            <input type="text" x-model="dojo"
+                                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+                                                placeholder="Club Name">
                                         </div>
 
                                         <!-- Image -->
                                         <div>
                                             <label class="block text-sm font-bold text-gray-700">Image</label>
                                             <div class="mt-2 flex items-center gap-x-3">
-                                                <input type="file" @change="imageFile = $event.target.files[0]" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-purple-600">
+                                                <input type="file" @change="imageFile = $event.target.files[0]"
+                                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-purple-600">
                                             </div>
                                         </div>
 
@@ -561,15 +559,18 @@
                             </div>
                         </div>
                         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                            <button type="submit" class="inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 sm:ml-3 sm:w-auto">Add Participant</button>
-                            <button type="button" @click="closeModal" class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+                            <button type="submit"
+                                class="inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 sm:ml-3 sm:w-auto">Add
+                                Participant</button>
+                            <button type="button" @click="closeModal"
+                                class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('participantAddModal', () => ({
@@ -581,7 +582,7 @@
 
                 init() {
                     window.addEventListener('open-add-participant-modal', () => {
-                         this.openModal();
+                        this.openModal();
                     });
                 },
 
@@ -600,7 +601,7 @@
                 async submitParticipant() {
                     const formData = new FormData();
                     formData.append('name', this.name);
-                    formData.append('dojo', this.dojo); 
+                    formData.append('dojo', this.dojo);
                     if (this.imageFile) {
                         formData.append('image', this.imageFile);
                     }
@@ -626,11 +627,11 @@
                         }));
                         this.closeModal();
 
-                         setTimeout(() => window.location.reload(), 500);
+                        setTimeout(() => window.location.reload(), 500);
 
                     } catch (error) {
-                         console.error(error);
-                         window.dispatchEvent(new CustomEvent('notify', {
+                        console.error(error);
+                        window.dispatchEvent(new CustomEvent('notify', {
                             detail: { message: 'Error', type: 'error', description: error.message }
                         }));
                     }

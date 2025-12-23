@@ -90,7 +90,7 @@
                                     <div class="flex-1 flex items-center justify-between px-3 py-2 min-w-0">
                                         <div class="flex flex-col min-w-0 mr-2">
                                             <span class="text-sm font-bold truncate {{ $match->winner_id && $match->winner_id == $match->participant_1_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_1_id ? 'text-gray-400 decoration-gray-300' : 'text-gray-700') }}">
-                                                {{ $match->participant1?->name ?? 'TBD' }}
+                                                {{ $match->participant1?->name ?? 'Bye' }}
                                             </span>
                                             @if($match->participant1 && $match->participant1->dojo)
                                                 <span class="text-sm text-gray-400 font-bold truncate">{{ $match->participant1->dojo }}</span>
@@ -145,7 +145,7 @@
                                     <div class="flex-1 flex items-center justify-between px-3 py-2 min-w-0">
                                         <div class="flex flex-col min-w-0 mr-2">
                                             <span class="text-sm font-bold truncate {{ $match->winner_id && $match->winner_id == $match->participant_2_id ? 'text-gray-900' : ($match->winner_id && $match->winner_id != $match->participant_2_id ? 'text-gray-400 decoration-gray-300' : 'text-gray-700') }}">
-                                                {{ $match->participant2?->name ?? 'TBD' }}
+                                                {{ $match->participant2?->name ?? 'Bye' }}
                                             </span>
                                             @if($match->participant2 && $match->participant2->dojo)
                                                 <span class="text-sm text-gray-400 font-bold truncate">{{ $match->participant2->dojo }}</span>

@@ -41,5 +41,15 @@ class Tournament extends Model
     {
         return $this->hasMany(TournamentMatch::class);
     }
+
+    public function hasActiveMatches()
+    {
+        return $this->matches()->where(function ($query) {
+            $query->where('participant_1_score', '>', 0)
+                ->orWhere('participant_2_score', '>', 0)
+                ->orWhereNotNull('winner_id')
+                ->orWhereNotNull('score_history');
+        })->exists();
+    }
 }
 

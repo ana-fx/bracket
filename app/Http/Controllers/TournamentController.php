@@ -129,6 +129,14 @@ class TournamentController extends Controller
 
     public function storeParticipants(Request $request, Tournament $tournament)
     {
+        // Check if tournament has active matches
+        if ($tournament->hasActiveMatches()) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Cannot add participants once matches have started.'], 403);
+            }
+            return redirect()->route('tournaments.participants', $tournament)->with('error', 'Cannot add participants once matches have started.');
+        }
+
         // Check if it's a bulk add or single add
         if ($request->filled('participants')) {
             $request->validate(['participants' => 'required|string']);
@@ -180,6 +188,10 @@ class TournamentController extends Controller
 
     public function destroyParticipant(Tournament $tournament, Participant $participant)
     {
+        if ($tournament->hasActiveMatches()) {
+            return back()->with('error', 'Cannot remove participants once matches have started.');
+        }
+
         $participant->delete();
         return back()->with('success', 'Participant removed.');
     }
@@ -220,6 +232,10 @@ class TournamentController extends Controller
 
     public function randomize(Tournament $tournament, BracketService $bracketService)
     {
+        if ($tournament->hasActiveMatches()) {
+            return response()->json(['success' => false, 'message' => 'Cannot shuffle bracket once matches have started.'], 403);
+        }
+
         $participants = $tournament->participants()->get()->shuffle();
 
         foreach ($participants as $index => $participant) {
@@ -234,6 +250,9 @@ class TournamentController extends Controller
 
     public function generate(Tournament $tournament, BracketService $bracketService)
     {
+        if ($tournament->hasActiveMatches()) {
+            return back()->withErrors(['error' => 'Cannot regenerate bracket once matches have started.']);
+        }
 
         if ($tournament->participants()->count() < 2) {
             return back()->withErrors(['error' => 'Not enough participants.']);

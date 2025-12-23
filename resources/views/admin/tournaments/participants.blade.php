@@ -15,66 +15,85 @@
                         class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">{{ $tournament->status }}</span>
                 </div>
 
-                <!-- Add Participants Form -->
-                <div x-data="{ tab: 'single' }" class="mb-8">
-                    <div class="flex gap-4 mb-4 border-b border-gray-100">
-                        <button @click="tab = 'single'"
-                            :class="{ 'border-primary text-primary': tab === 'single', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'single' }"
-                            class="pb-2 border-b-2 font-semibold transition">
-                            Add One-by-One
-                        </button>
-                        <button @click="tab = 'bulk'"
-                            :class="{ 'border-primary text-primary': tab === 'bulk', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'bulk' }"
-                            class="pb-2 border-b-2 font-semibold transition">
-                            Bulk Import
-                        </button>
+                @if(!$tournament->hasActiveMatches())
+                    <!-- Add Participants Form -->
+                    <div x-data="{ tab: 'single' }" class="mb-8">
+                        <div class="flex gap-4 mb-4 border-b border-gray-100">
+                            <button @click="tab = 'single'"
+                                :class="{ 'border-primary text-primary': tab === 'single', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'single' }"
+                                class="pb-2 border-b-2 font-semibold transition">
+                                Add One-by-One
+                            </button>
+                            <button @click="tab = 'bulk'"
+                                :class="{ 'border-primary text-primary': tab === 'bulk', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'bulk' }"
+                                class="pb-2 border-b-2 font-semibold transition">
+                                Bulk Import
+                            </button>
+                        </div>
+
+                        <!-- Single Add Form -->
+                        <form x-show="tab === 'single'" action="{{ route('tournaments.participants.store', $tournament) }}"
+                            method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-2">Participant Name</label>
+                                    <input type="text" name="name"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                                        placeholder="e.g. Daniel LaRusso" required>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-2">Dojo / Affiliation</label>
+                                    <input type="text" name="dojo"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                                        placeholder="e.g. Miyagi-Do">
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 font-bold mb-2">Photo</label>
+                                <input type="file" name="image"
+                                    class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition">
+                            </div>
+                            <button type="submit"
+                                class="bg-secondary text-pink-900 font-bold py-3 px-6 rounded-xl hover:bg-pink-300 transition shadow-sm">
+                                + Add Participant
+                            </button>
+                        </form>
+
+                        <!-- Bulk Add Form -->
+                        <form x-show="tab === 'bulk'" action="{{ route('tournaments.participants.store', $tournament) }}"
+                            method="POST" style="display: none;">
+                            @csrf
+                            <div class="mb-6">
+                                <label class="block text-gray-700 font-bold mb-2">Add Participants (One per line)</label>
+                                <textarea name="participants" rows="6"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+                                    placeholder="Enter names..."></textarea>
+                            </div>
+                            <button type="submit"
+                                class="bg-secondary text-pink-900 font-bold py-3 px-6 rounded-xl hover:bg-pink-300 transition shadow-sm">
+                                + Add All
+                            </button>
+                        </form>
                     </div>
-
-                    <!-- Single Add Form -->
-                    <form x-show="tab === 'single'" action="{{ route('tournaments.participants.store', $tournament) }}"
-                        method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Participant Name</label>
-                                <input type="text" name="name"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                                    placeholder="e.g. Daniel LaRusso" required>
+                @else
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
                             </div>
-                            <div>
-                                <label class="block text-gray-700 font-bold mb-2">Dojo / Affiliation</label>
-                                <input type="text" name="dojo"
-                                    class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                                    placeholder="e.g. Miyagi-Do">
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    The tournament has started. Participants cannot be added or removed.
+                                </p>
                             </div>
                         </div>
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-bold mb-2">Photo</label>
-                            <input type="file" name="image"
-                                class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition">
-                        </div>
-                        <button type="submit"
-                            class="bg-secondary text-pink-900 font-bold py-3 px-6 rounded-xl hover:bg-pink-300 transition shadow-sm">
-                            + Add Participant
-                        </button>
-                    </form>
-
-                    <!-- Bulk Add Form -->
-                    <form x-show="tab === 'bulk'" action="{{ route('tournaments.participants.store', $tournament) }}"
-                        method="POST" style="display: none;">
-                        @csrf
-                        <div class="mb-6">
-                            <label class="block text-gray-700 font-bold mb-2">Add Participants (One per line)</label>
-                            <textarea name="participants" rows="6"
-                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
-                                placeholder="Enter names..."></textarea>
-                        </div>
-                        <button type="submit"
-                            class="bg-secondary text-pink-900 font-bold py-3 px-6 rounded-xl hover:bg-pink-300 transition shadow-sm">
-                            + Add All
-                        </button>
-                    </form>
-                </div>
+                    </div>
+                @endif
             </div>
 
             <!-- Current Participants List -->
@@ -122,16 +141,18 @@
                                                 d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" />
                                         </svg>
                                     </button>
-                                    <button type="button"
-                                        @click="confirmDelete('{{ route('participants.destroy', [$tournament, $participant]) }}', '{{ $participant->name }}')"
-                                        class="text-gray-300 hover:text-red-500 transition">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                            class="w-5 h-5">
-                                            <path fill-rule="evenodd"
-                                                d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
+                                    @if(!$tournament->hasActiveMatches())
+                                        <button type="button"
+                                            @click="confirmDelete('{{ route('participants.destroy', [$tournament, $participant]) }}', '{{ $participant->name }}')"
+                                            class="text-gray-300 hover:text-red-500 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                                class="w-5 h-5">
+                                                <path fill-rule="evenodd"
+                                                    d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -279,7 +300,7 @@
 
 
 
-                @if($participants->count() >= 2)
+                @if($participants->count() >= 2 && !$tournament->hasActiveMatches())
                     <form action="{{ route('tournaments.generate', $tournament) }}" method="POST"
                         onsubmit="return confirmGeneration(event)">
                         @csrf
@@ -293,6 +314,7 @@
                             <span>Generate Bracket</span>
                         </button>
                     </form>
+                @endif
 
                     <script>
                         function confirmGeneration(e) {
