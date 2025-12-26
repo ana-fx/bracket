@@ -88,7 +88,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm text-yellow-700">
-                                    The tournament has started. Participants cannot be added or removed.
+                                    Matches have begun. Participants cannot be added, removed, or shuffled once scoring starts.
                                 </p>
                             </div>
                         </div>

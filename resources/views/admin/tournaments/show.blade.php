@@ -19,35 +19,49 @@
 
                     <div class="flex gap-3">
 
-                        <button onclick="window.print()"
-                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2 no-print">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        <button onclick="window.print()" title="Print Bracket"
+                            class="p-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm no-print">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.618 0-1.113-.497-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.618 0-1.113-.497-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
                             </svg>
-                            Print Bracket
                         </button>
 
-                        <a href="{{ route('tournaments.edit', $tournament) }}"
-                            class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">
-                            Settings
+                        <a href="{{ route('tournaments.edit', $tournament) }}" title="Settings"
+                            class="p-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.581-.495.644-.869l.214-1.281Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
                         </a>
 
                         @if(!$tournament->hasActiveMatches())
-                            <button @click="$dispatch('open-add-participant-modal')"
-                                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                            <a href="{{ route('tournaments.participants', $tournament) }}" title="Manage Participants"
+                                class="p-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                </svg>
+                            </a>
+
+                            <button @click="$dispatch('open-add-participant-modal')" title="Add Participant"
+                                class="p-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="w-5 h-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
-                                Add Participant
                             </button>
 
                             @if(!$matchesByRound->isEmpty())
-                                <button type="button" onclick="runGacha(this)"
-                                    class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-purple-600 shadow-sm flex items-center gap-2">
+                                <button type="button" onclick="runGacha(this)" title="Shuffle Bracket"
+                                    class="p-2.5 bg-primary text-white rounded-xl hover:bg-purple-600 shadow-sm transition-all hover:shadow-md">
                                     <svg id="gacha-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                        stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                                     </svg>
@@ -59,7 +73,6 @@
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                         </path>
                                     </svg>
-                                    <span id="gacha-text">Shuffle Bracket</span>
                                 </button>
                             @endif
                         @endif
@@ -76,7 +89,7 @@
                     btn.classList.add('opacity-75', 'cursor-not-allowed');
                     document.getElementById('gacha-icon').classList.add('hidden');
                     document.getElementById('gacha-spinner').classList.remove('hidden');
-                    document.getElementById('gacha-text').innerText = 'Shuffling...';
+                    document.getElementById('gacha-spinner').classList.remove('hidden');
 
                     // Call Backend
                     fetch('{{ route('tournaments.randomize', $tournament) }}', {
@@ -354,8 +367,8 @@
             }
         </script>
 
-        <div x-data="participantEditModal" class="relative z-[60]" aria-labelledby="modal-title" role="dialog"
-            aria-modal="true" x-show="isOpen" style="display: none;">
+        <div x-data="participantEditModal" class="relative" style="z-index: 9999;" aria-labelledby="modal-title"
+            role="dialog" aria-modal="true" x-show="isOpen" style="display: none;">
 
             <!-- Backdrop -->
             <div class="fixed inset-0 bg-gray-900/75 transition-opacity" x-show="isOpen"
@@ -364,7 +377,7 @@
                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" aria-hidden="true"
                 @click="closeModal"></div>
 
-            <div class="fixed inset-0 z-[60] w-screen overflow-y-auto">
+            <div class="fixed inset-0 w-screen overflow-y-auto" style="z-index: 9999;">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
 
                     <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
@@ -507,58 +520,66 @@
         </script>
 @endsection
 
-@push('scripts')
-    <style>
-        @media print {
-            /* 1. Hide everything on the page */
-            body * {
-                visibility: hidden !important;
-            }
+    @push('scripts')
+        <style>
+            @media print {
 
-            /* 2. Specifically show ONLY the bracket wrapper and its content */
-            #bracket-wrapper,
-            #bracket-wrapper * {
-                visibility: visible !important;
-            }
+                /* 1. Hide everything on the page */
+                body * {
+                    visibility: hidden !important;
+                }
 
-            /* 3. Position the bracket at the absolute top-left for zero waste */
-            #bracket-wrapper {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                transform: scale(0.9); /* Adjust to ensure it fits landscape paper */
-                transform-origin: top left;
-            }
+                /* 2. Specifically show ONLY the bracket wrapper and its content */
+                #bracket-wrapper,
+                #bracket-wrapper * {
+                    visibility: visible !important;
+                }
 
-            /* 4. Completely remove non-bracket layout blocks to prevent empty pages/spacing */
-            header, nav, footer, aside, .no-print, .toast-container, [class*="bg-white border-b"] {
-                display: none !important;
-            }
+                /* 3. Position the bracket at the absolute top-left for zero waste */
+                #bracket-wrapper {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    transform: scale(0.9);
+                    /* Adjust to ensure it fits landscape paper */
+                    transform-origin: top left;
+                }
 
-            /* 5. Landscape Optimization */
-            @page {
-                size: landscape;
-                margin: 0.5cm;
-            }
+                /* 4. Completely remove non-bracket layout blocks to prevent empty pages/spacing */
+                header,
+                nav,
+                footer,
+                aside,
+                .no-print,
+                .toast-container,
+                [class*="bg-white border-b"] {
+                    display: none !important;
+                }
 
-            body {
-                background: white !important;
-            }
+                /* 5. Landscape Optimization */
+                @page {
+                    size: landscape;
+                    margin: 0.5cm;
+                }
 
-            /* Ensure background colors and paths are printed */
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+                body {
+                    background: white !important;
+                }
+
+                /* Ensure background colors and paths are printed */
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
             }
-        }
-    </style>
-@endpush
+        </style>
+    @endpush
     <!-- Add Participant Modal -->
-    <div x-data="participantAddModal" class="relative z-[60]" aria-labelledby="modal-title" role="dialog"
-        aria-modal="true" x-show="isOpen" style="display: none;">
+    <div x-data="participantAddModal" class="relative" style="z-index: 9999;" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true" x-show="isOpen" style="display: none;">
 
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-gray-900/75 transition-opacity" x-show="isOpen"
@@ -567,7 +588,7 @@
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" aria-hidden="true"
             @click="closeModal"></div>
 
-        <div class="fixed inset-0 z-[60] w-screen overflow-y-auto">
+        <div class="fixed inset-0 w-screen overflow-y-auto" style="z-index: 9999;">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
 
                 <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"

@@ -13,16 +13,45 @@ class TournamentController extends Controller
 {
     public function index()
     {
-        $tournaments = Tournament::where('user_id', Auth::id())->latest()->get();
+        $userId = Auth::id();
+        $tournaments = Tournament::where('user_id', $userId)->latest()->get();
+
+        // Stats
+        $totalTournaments = $tournaments->count();
+        $activeTournaments = $tournaments->where('status', 'active')->count();
+        $upcomingTournaments = $tournaments->where('start_date', '>', now())->count();
         $totalParticipants = Participant::whereIn('tournament_id', $tournaments->pluck('id'))->count();
-        $completedMatches = DB::table('matches')
+
+        // Match Stats
+        $matchesQuery = DB::table('matches')
             ->join('tournaments', 'matches.tournament_id', '=', 'tournaments.id')
-            ->where('tournaments.user_id', Auth::id())
+            ->where('tournaments.user_id', $userId);
+
+        $totalMatches = $matchesQuery->count();
+        $completedMatches = $matchesQuery->whereNotNull('winner_id')->count();
+        $completionPercentage = $totalMatches > 0 ? round(($completedMatches / $totalMatches) * 100) : 0;
+
+        // Recent Winners Feed
+        $recentWinners = \App\Models\TournamentMatch::with(['tournament', 'winner'])
+            ->whereHas('tournament', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
             ->whereNotNull('winner_id')
-            ->count();
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
 
-
-        return view('admin.dashboard', compact('tournaments', 'totalParticipants', 'completedMatches'));
+        return view('admin.dashboard', compact(
+            'tournaments',
+            'totalTournaments',
+            'activeTournaments',
+            'upcomingTournaments',
+            'totalParticipants',
+            'completedMatches',
+            'totalMatches',
+            'completionPercentage',
+            'recentWinners'
+        ));
     }
 
     public function create()

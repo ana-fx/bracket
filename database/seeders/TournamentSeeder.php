@@ -30,12 +30,15 @@ class TournamentSeeder extends Seeder
             'location' => 'Test Arena 1',
             'status' => 'active',
             'user_id' => $user->id,
-            'best_of' => 3
         ]);
 
         $participants6 = [
-            'Player 1 (Seed 1)', 'Player 2 (Seed 2)', 'Player 3 (Seed 3)',
-            'Player 4 (Seed 4)', 'Player 5 (Seed 5)', 'Player 6 (Seed 6)'
+            'Player 1 (Seed 1)',
+            'Player 2 (Seed 2)',
+            'Player 3 (Seed 3)',
+            'Player 4 (Seed 4)',
+            'Player 5 (Seed 5)',
+            'Player 6 (Seed 6)'
         ];
 
         foreach ($participants6 as $index => $name) {
@@ -60,7 +63,6 @@ class TournamentSeeder extends Seeder
             'location' => 'Test Arena 2',
             'status' => 'active',
             'user_id' => $user->id,
-            'best_of' => 1
         ]);
 
         $participants13 = [];
