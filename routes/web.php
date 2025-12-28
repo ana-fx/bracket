@@ -44,7 +44,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Generate Step
     Route::post('/tournaments/{tournament}/generate', [TournamentController::class, 'generate'])->name('tournaments.generate');
 
+    // Print Route
+    Route::get('/tournaments/{tournament}/print', [TournamentController::class, 'print'])->name('tournaments.print');
+
     // Admin View (Managed)
+    Route::get('/tournaments/{tournament}', [TournamentController::class, 'adminShow'])->name('admin.tournaments.show');
     Route::get('/tournaments/{tournament}', [TournamentController::class, 'adminShow'])->name('admin.tournaments.show');
 
     // Match Management

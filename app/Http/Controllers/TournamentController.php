@@ -423,4 +423,13 @@ class TournamentController extends Controller
             throw $e;
         }
     }
+    public function print(Tournament $tournament)
+    {
+        $matches = $tournament->matches()->with(['participant1', 'participant2'])->get();
+
+        // Group matches by round
+        $matchesByRound = $matches->groupBy('round')->sortKeys();
+
+        return view('admin.tournaments.print', compact('tournament', 'matchesByRound'));
+    }
 }

@@ -218,6 +218,12 @@
              }
 
              setTimeout(drawConnectors, 500);
+
+             // Redraw for print to ensure alignment
+             window.addEventListener('beforeprint', () => {
+                 setTimeout(drawConnectors, 10);
+                 setTimeout(drawConnectors, 500); // Safety double-check
+             });
         });
 
         function drawConnectors() {
