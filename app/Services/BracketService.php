@@ -78,6 +78,8 @@ class BracketService
         // Participants collection is 0-indexed (seed 1 = index 0).
         // If seed > count, that slot is a BYE.
 
+        $matchesToDelete = [];
+
         foreach ($r1Matches as $idx => $match) {
             // Each match takes 2 seeds from the order
             $seed1 = $seedOrder[$idx * 2];     // e.g. 1
@@ -92,14 +94,12 @@ class BracketService
 
             // Auto-Advance BYES (1 vs Null)
             // If P1 exists and P2 is Null -> P1 Wins immediately.
-            if ($p1 && !$p2) {
+            // We also MARK this match for DELETION to create a compact bracket (hide Byes).
+            $isBye = ($p1 && !$p2);
+
+            if ($isBye) {
                 $updateData['winner_id'] = $p1->id;
-                // Propagate to next match logic handled below/separately?
-                // Ideally we set it here, then propagate.
             }
-            // Technically P2 could exist without P1? Unlikely with standard seeding but possible if seeds missing.
-            // Seeding logic strictly fills 1vs8, 2vs7.
-            // If Seed 1 and Seed 8 (Bye) -> 1 wins.
 
             if (!empty($updateData)) {
                 TournamentMatch::where('id', $match->id)->update($updateData);
@@ -109,10 +109,16 @@ class BracketService
             // Propagate Bye Winners immediately
             if ($match->winner_id && $match->next_match_id) {
                 $nextMatch = TournamentMatch::find($match->next_match_id);
-                // Determine slot (Event/Odd index)
-                $isP1Slot = ($idx % 2 === 0); // 0, 2, 4 -> P1 slot of parent. 1, 3, 5 -> P2 slot.
+                // Determine slot (Even/Odd index)
+                $isP1Slot = ($idx % 2 === 0);
                 $slot = $isP1Slot ? 'participant_1_id' : 'participant_2_id';
                 $nextMatch->update([$slot => $match->winner_id]);
+
+                // If this was a Bye, we assume the next match now "owns" this participant as a start node.
+                // We add to delete list to clean up the visual tree.
+                if ($isBye) {
+                    $matchesToDelete[] = $match->id;
+                }
             }
         }
 
@@ -166,6 +172,11 @@ class BracketService
                     }
                 }
             }
+        }
+
+        // 6. Clean up Bye Matches (Compact View)
+        if (!empty($matchesToDelete)) {
+            TournamentMatch::destroy($matchesToDelete);
         }
     }
 
